@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: Comment Service
+  version: 1.0.0
+servers:
+- url: http://localhost:8080
+paths:
+  /comments:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Comment'
+                type: array
+          description: A list of comments
+      summary: Get all comments
+      x-accepts:
+      - application/json
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+        required: true
+      responses:
+        "201":
+          description: Comment created
+      summary: Create a new comment
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /comments/{id}:
+    delete:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Comment deleted
+      summary: Delete a comment by ID
+      x-accepts:
+      - application/json
+    get:
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: A comment
+      summary: Get a comment by ID
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    Comment:
+      example:
+        author: author
+        id: 0
+        text: text
+      properties:
+        id:
+          format: int64
+          readOnly: true
+          type: integer
+        text:
+          type: string
+        author:
+          type: string
+      required:
+      - text
+      type: object
