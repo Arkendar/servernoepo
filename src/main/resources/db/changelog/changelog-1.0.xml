@@ -1,0 +1,103 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+    <changeSet id="create-tables" author="you">
+        <!-- Таблица customer -->
+        <createTable tableName="customer">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="city" type="VARCHAR(255)"/>
+            <column name="street" type="VARCHAR(255)"/>
+            <column name="zipcode" type="VARCHAR(255)"/>
+        </createTable>
+
+        <!-- Таблица payment -->
+        <createTable tableName="payment">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="payment_type" type="VARCHAR(31)"/>
+            <column name="amount" type="FLOAT"/>
+            <column name="cash_tendered" type="FLOAT"/> <!-- Для Cash -->
+            <column name="name" type="VARCHAR(255)"/>    <!-- Для Check -->
+            <column name="bank_id" type="VARCHAR(255)"/> <!-- Для Check -->
+            <column name="number" type="VARCHAR(255)"/>  <!-- Для Credit -->
+            <column name="type" type="VARCHAR(255)"/>    <!-- Для Credit -->
+            <column name="exp_date" type="TIMESTAMP"/>   <!-- Для Credit -->
+        </createTable>
+
+        <!-- Таблица orders -->
+        <createTable tableName="orders">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="date" type="TIMESTAMP"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="customer_id" type="BIGINT"/>
+            <column name="payment_id" type="BIGINT"/>
+        </createTable>
+
+        <!-- Явное объявление внешних ключей для orders -->
+        <addForeignKeyConstraint
+                baseTableName="orders"
+                baseColumnNames="customer_id"
+                referencedTableName="customer"
+                referencedColumnNames="id"
+                constraintName="fk_order_customer"/>
+
+        <addForeignKeyConstraint
+                baseTableName="orders"
+                baseColumnNames="payment_id"
+                referencedTableName="payment"
+                referencedColumnNames="id"
+                constraintName="fk_order_payment"/>
+
+        <!-- Таблица order_details -->
+        <createTable tableName="order_details">
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tax_status" type="VARCHAR(255)"/>
+        </createTable>
+
+        <!-- Составной первичный ключ для order_details -->
+        <addPrimaryKey
+                tableName="order_details"
+                columnNames="order_id, quantity, tax_status"
+                constraintName="pk_order_details"/>
+
+        <!-- Внешний ключ для order_details -->
+        <addForeignKeyConstraint
+                baseTableName="order_details"
+                baseColumnNames="order_id"
+                referencedTableName="orders"
+                referencedColumnNames="id"
+                constraintName="fk_order_details_order"/>
+
+        <!-- Таблица measurement -->
+        <createTable tableName="measurement">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="symbol" type="VARCHAR(10)"/>
+        </createTable>
+
+        <!-- Таблица item -->
+        <createTable tableName="item">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="shipping_weight_value" type="DECIMAL(19,2)"/> <!-- Исправлено имя -->
+            <column name="description" type="TEXT"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
